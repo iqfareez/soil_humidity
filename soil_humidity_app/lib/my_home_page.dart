@@ -77,7 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
     if (message.isEmpty) return; // to avoid fomrmat exception
     double? analogMessage = double.tryParse(message.trim());
     setState(() {
-      percentValue = (analogMessage ?? 0) / 1023;
+      var percent = (analogMessage ?? 0) / 1023;
+      percentValue = 1 - percent; // inverse percent
     });
   }
 
@@ -137,7 +138,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   case BluetoothConnectionState.connecting:
                     return PercentIndicator.connecting();
                   case BluetoothConnectionState.connected:
-                    return PercentIndicator.connected(percent: percentValue);
+                    return PercentIndicator.connected(
+                      percent: percentValue ?? 0,
+                    );
                   case BluetoothConnectionState.error:
                     return const PercentIndicator.error();
                 }
