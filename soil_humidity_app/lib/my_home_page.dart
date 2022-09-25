@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,8 +25,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   BluetoothConnectionState _btStatus = BluetoothConnectionState.disconnected;
+  BluetoothConnection? connection;
   String _messageBuffer = '';
   double? percentValue;
+  bool _isWatering = false;
 
   void _onDataReceived(Uint8List data) {
     // Allocate buffer for parsed data
@@ -73,9 +74,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // calculate percentage from message
     // analog 10 bit
-    double analogMessage = double.parse(message);
+    if (message.isEmpty) return; // to avoid fomrmat exception
+    double? analogMessage = double.tryParse(message.trim());
     setState(() {
-      percentValue = analogMessage / 1023;
+      percentValue = (analogMessage ?? 0) / 1023;
     });
   }
 
@@ -98,14 +100,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 _btStatus = BluetoothConnectionState.connecting;
               });
 
-              BluetoothConnection.toAddress(device.address).then((connection) {
+              BluetoothConnection.toAddress(device.address).then((_connection) {
                 print('Connected to the device');
-                connection = connection;
+                connection = _connection;
                 setState(() {
                   _btStatus = BluetoothConnectionState.connected;
                 });
 
-                connection.input!.listen(_onDataReceived).onDone(() {
+                connection!.input!.listen(_onDataReceived).onDone(() {
                   setState(() {
                     _btStatus = BluetoothConnectionState.disconnected;
                   });
@@ -113,6 +115,10 @@ class _MyHomePageState extends State<MyHomePage> {
               }).catchError((error) {
                 print('Cannot connect, exception occured');
                 print(error);
+
+                setState(() {
+                  _btStatus = BluetoothConnectionState.error;
+                });
               });
             },
           ),
@@ -125,7 +131,6 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(height: 20),
             Builder(
               builder: (context) {
-                log(_btStatus.toString());
                 switch (_btStatus) {
                   case BluetoothConnectionState.disconnected:
                     return const PercentIndicator.disconnected();
@@ -140,8 +145,22 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const Spacer(),
             ElevatedButton(
-              onPressed: () {
-                setState(() {});
+              onPressed: () async {
+                String text = 'water';
+
+                setState(() => _isWatering = true);
+
+                if (text.isNotEmpty) {
+                  try {
+                    connection!.output
+                        .add(Uint8List.fromList(utf8.encode("$text\r\n")));
+                    await connection!.output.allSent;
+                  } finally {
+                    Future.delayed(const Duration(seconds: 4), () {
+                      setState(() => _isWatering = false);
+                    });
+                  }
+                }
               },
               child: const Text('Water my plant'),
             ),
@@ -150,6 +169,11 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 300,
               child: Builder(
                 builder: (context) {
+                  if (_isWatering) {
+                    return Lottie.asset(
+                        'assets/lottie/90819-watering-garden-icon.json');
+                  }
+
                   if (percentValue == null) {
                     return const SizedBox.shrink();
                   }

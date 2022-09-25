@@ -39,7 +39,7 @@ class PercentIndicator extends StatelessWidget {
             child: Text(
               _message != null
                   ? _message!
-                  : '${(percent! * 100).toStringAsFixed(0)}%',
+                  : '${((percent ?? 0) * 100).toStringAsFixed(0)}%',
               style: const TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.w200,
