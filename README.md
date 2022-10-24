@@ -2,6 +2,8 @@
 
 Using Arduino to read the soil humidity sensor, then send the value to the app using Serial connection over Bluetooth.
 
+https://youtube.com/shorts/p8qMC-POkwc?feature=share
+
 ## Getting started
 
 ### Hardware
