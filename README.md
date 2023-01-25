@@ -1,6 +1,17 @@
+![Arduino](https://img.shields.io/badge/-Arduino-00979D?style=for-the-badge&logo=Arduino&logoColor=white)
+![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)
+
 # Soil humidity monitor app
 
-Using Arduino to read the soil humidity sensor, then send the value to the app using Serial connection over Bluetooth.
+Using Arduino to read the soil humidity sensor, then send the value to the Android app using Serial connection over Bluetooth.
+
+## Watch the demo
+
+https://youtube.com/shorts/p8qMC-POkwc?feature=share
+
+Also published on Cytron (for Cytron brand festival 2022)
+- https://www.tiktok.com/@cytrontech/video/7157591240140131610
+- https://www.instagram.com/reel/CjuceZkj4q7
 
 ## Getting started
 
@@ -28,7 +39,3 @@ _For other microcontrollers other than Arduino Uno, you may needed to change the
 ### Software (App)
 
 Kindly read the readme in [soil_humidity_app](/soil_humidity_app/) folder.
-
-## Motivation
-
-Cytron brand festival 2022 - Showcase project. [Here's my submission](https://www.instagram.com/reel/CjBC2E0JOc-/?igshid=NjQxMzA2Mjk=).
